@@ -298,7 +298,7 @@ jobs:
           sed -i 's/tag: .*/tag: "${{ github.run_id }}"/' python-app/values.yaml
           git config --global user.email "arjunpt2006@gmail.com "
           git config --global user.name "arjunpt"
-          git add helm/python-app/values.yaml
+          git add python-app/values.yaml
           git commit -m "Update Docker image tag to ${{ github.run_id }} in Helm chart"
           git push
 
