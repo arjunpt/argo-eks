@@ -67,6 +67,10 @@ on:
       KUBE_CONFIG_PROD:
         description: 'kube config base 64 encoded'
         required: true
+      TOKEN:
+        description: 'github token for code commit'
+        required: true
+      
 jobs:
   # Lint Stage
   lint_test:
@@ -276,32 +280,27 @@ jobs:
           docker push $ECR_REGISTRY/$IMAGE_NAME:${{ github.run_id }}
       
 
-  # Post-Deployment Tasks Stagess
-  Deploy:
+  # update-newtag-in-helm-chart
+  Helm-chart-update:
     runs-on: ubuntu-latest
     needs: publish
+    env:
+      TOKEN: ${{ secrets.TOKEN }}
     steps:
+  
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ env.TOKEN }}
+  
+      - name: Update Helm Chart Version in Git Repository
+        run: |
+          sed -i 's/tag: .*/tag: "${{ github.run_id }}"/' helm/python-app/values.yaml
+          git config --global user.email "${{ arjunpt2006@gmail.com }}"
+          git config --global user.name "${{ arjunpt }}"
+          git add helm/python-app/values.yaml
+          git commit -m "Update Docker image tag to ${{ github.run_id }} in Helm chart"
+          git push
 
-    - name: Checkout repository
-      uses: actions/checkout@v4
 
-
-    - name: Configure credentials
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
-
-    - name: Set up environment
-      run: |
-          chmod +x deploy.sh
-          ./deploy.sh
-
-    - name: Kubectl Action
-      uses: tale/kubectl-action@v1
-      with:
-        base64-kube-config: ${{ secrets.KUBE_CONFIG_PROD }}
-    - run: |
-        kubectl apply -f ${{ inputs.deployment-manifest }}
-        kubectl apply -f ${{ inputs.service-manifest }}
+        
