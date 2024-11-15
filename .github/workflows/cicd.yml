@@ -186,13 +186,11 @@ jobs:
         file: ${{ inputs.dockerfile-path }}
         tags: |
           ${{ inputs.IMAGE_NAME }}:${{ github.run_id }}
-          ${{ inputs.IMAGE_NAME }}:latest
         load: true
 
     - name: Save Docker image as .tar file
       run: |
-        docker save -o /tmp/docker-images.tar  ${{ inputs.IMAGE_NAME }}:${{ github.run_id }} \
-        ${{ inputs.IMAGE_NAME }}:latest
+        docker save -o /tmp/docker-images.tar  ${{ inputs.IMAGE_NAME }}:${{ github.run_id }} 
   
     - name: Upload Docker image as artifact
       uses: actions/upload-artifact@v3
@@ -275,9 +273,8 @@ jobs:
         IMAGE_NAME: ${{ inputs.IMAGE_NAME }}
       run: |
           docker tag $IMAGE_NAME:${{ github.run_id }} $ECR_REGISTRY/$IMAGE_NAME:${{ github.run_id }}
-          docker tag $IMAGE_NAME:latest $ECR_REGISTRY/$IMAGE_NAME:latest
           docker push $ECR_REGISTRY/$IMAGE_NAME:${{ github.run_id }}
-          docker push $ECR_REGISTRY/$IMAGE_NAME:latest
+      
 
   # Post-Deployment Tasks Stagess
   Deploy:
