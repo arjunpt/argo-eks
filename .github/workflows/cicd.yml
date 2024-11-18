@@ -311,24 +311,17 @@ jobs:
             chmod +x deploy.sh
             ./deploy.sh
 
-      - name: Decode and write kubeconfig
-        run: |
-          mkdir -p $HOME/.kube  # Create the .kube directory if it doesn't exist
-          echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 --decode > $HOME/.kube/config
-          chmod 600 $HOME/.kube/config  # Ensure the kubeconfig file has proper permissions
+      # - name: Decode and write kubeconfig
+      #   run: |
+      #     mkdir -p $HOME/.kube  # Create the .kube directory if it doesn't exist
+      #     echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 --decode > $HOME/.kube/config
+      #     chmod 600 $HOME/.kube/config  # Ensure the kubeconfig file has proper permissions
 
-      - name: Verify Kubeconfig content
-        run: |
-          cat $HOME/.kube/config  # Check if kubeconfig is decoded correctly
+      - name: Kubectl Action
+        uses: tale/kubectl-action@v1
+        with:
+          base64-kube-config: ${{ secrets.KUBE_CONFIG_PROD }}
 
-      - name: Verify AWS credentials
-        run: |
-          aws sts get-caller-identity  # Confirm AWS credentials are valid
-          
-      - name: Clear Kubernetes cache
-        run: |
-          rm -rf ~/.kube/cache
-          
       - name: Verify Kubernetes cluster connection
         run: |
           kubectl cluster-info  # Check if kubectl can connect to the cluster
@@ -337,7 +330,6 @@ jobs:
         run: |
           kubectl get nodes  # Verify access to Kubernetes nodes
         
-          
       - name: Install Helm
         run: |
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
