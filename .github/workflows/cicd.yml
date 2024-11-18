@@ -311,12 +311,16 @@ jobs:
             chmod +x deploy.sh
             ./deploy.sh
 
-      - name: Configure kubectl
+      - name: Kubectl Action
+        uses: tale/kubectl-action@v1
+        with:
+          base64-kube-config: ${{ secrets.KUBE_CONFIG_PROD }}
+      - run: |
+            kubectl get nodes
+
+      - name: Install Helm
         run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 -d > $HOME/.kube/config
-          chmod 600 $HOME/.kube/config
-          kubectl get nodes  # Optional: To verify access to the cluster
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
       
       # Step 6: Deploy updated Helm chart to EKS
       - name: Deploy Helm Chart to EKS
