@@ -297,57 +297,50 @@ jobs:
           git add python-app/values.yaml
           git commit -m "Update Docker image tag to ${{ github.run_id }} in Helm chart"
           git push
+  
+  deployment:
+    runs-on: ubuntu-latest
+    needs: Helm-chart-update
+    steps:
 
-
-      - name: Configure credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      # Step 3: Set up environment (if required)
       - name: Set up environment
         run: |
-            chmod +x deploy.sh
-            ./deploy.sh
+          chmod +x deploy.sh
+          ./deploy.sh
 
-      # - name: Decode and write kubeconfig
-      #   run: |
-      #     mkdir -p $HOME/.kube  # Create the .kube directory if it doesn't exist
-      #     echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 --decode > $HOME/.kube/config
-      #     chmod 600 $HOME/.kube/config  # Ensure the kubeconfig file has proper permissions
-
-      - name: Kubectl Action
+      # Step 4: Configure Kubernetes kubeconfig
+      - name: Configure Kubernetes kubeconfig
         uses: tale/kubectl-action@v1
         with:
           base64-kube-config: ${{ secrets.KUBE_CONFIG_PROD }}
-      - run: |
-          kubectl get nodes 
-          
 
+      # Step 5: Verify Kubernetes connection
       - name: Verify Kubernetes cluster connection
         run: |
-          kubectl cluster-info  # Check if kubectl can connect to the cluster
+          kubectl cluster-info
 
+      # Step 6: Verify nodes in the cluster
       - name: Verify nodes in cluster
         run: |
-          kubectl get nodes  # Verify access to Kubernetes nodes
-        
+          kubectl get nodes
+
+      # Step 7: Install Helm
       - name: Install Helm
         run: |
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-      
-      # Step 6: Deploy updated Helm chart to EKS
+
+      # Step 8: Deploy Helm Chart to EKS
       - name: Deploy Helm Chart to EKS
         run: |
           helm upgrade --install testapp ./python-app \
             --namespace default \
             --set image.tag=${{ github.run_id }}
-
-
-            
-
-
-
-
         
