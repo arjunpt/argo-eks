@@ -31,10 +31,6 @@ on:
         required: true
         type: string
         description: 'dokcer IMAGE_NAME'
-      IMAGE_TAG:
-        required: true
-        type: string
-        description: 'IMAGE_TAG'
       deployment-manifest:
         required: true
         type: string
