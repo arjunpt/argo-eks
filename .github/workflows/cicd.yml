@@ -324,7 +324,11 @@ jobs:
       - name: Verify AWS credentials
         run: |
           aws sts get-caller-identity  # Confirm AWS credentials are valid
-
+          
+      - name: Clear Kubernetes cache
+        run: |
+          rm -rf ~/.kube/cache
+          
       - name: Verify Kubernetes cluster connection
         run: |
           kubectl cluster-info  # Check if kubectl can connect to the cluster
