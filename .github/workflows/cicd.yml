@@ -298,6 +298,19 @@ jobs:
           git commit -m "Update Docker image tag to ${{ github.run_id }} in Helm chart"
           git push
 
+
+      - name: Configure credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Set up environment
+        run: |
+            chmod +x deploy.sh
+            ./deploy.sh
+
       - name: Configure kubectl
         run: |
           mkdir -p $HOME/.kube
