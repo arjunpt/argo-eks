@@ -31,14 +31,6 @@ on:
         required: true
         type: string
         description: 'dokcer IMAGE_NAME'
-      deployment-manifest:
-        required: true
-        type: string
-        description: 'path to the kubernetes deploymnent manifest file'
-      service-manifest:
-        required: true
-        type: string
-        description: 'path to the kubernetes service manifest file'
       
 
     secrets:
