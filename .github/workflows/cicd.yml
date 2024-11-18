@@ -298,12 +298,14 @@ jobs:
           git commit -m "Update Docker image tag to ${{ github.run_id }} in Helm chart"
           git push
 
-      # Step 4: Install Helm
-      - name: Install Helm
+      - name: Configure kubectl
         run: |
-          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-  
-      # Step 5: Deploy updated Helm chart to EKS
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 -d > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
+          kubectl get nodes  # Optional: To verify access to the cluster
+      
+      # Step 6: Deploy updated Helm chart to EKS
       - name: Deploy Helm Chart to EKS
         run: |
           helm upgrade --install testapp ./python-app \
