@@ -322,7 +322,7 @@ jobs:
       # Step 5: Verify Kubernetes connection
       - name: Verify Kubernetes cluster connection
         run: |
-          kubectl get pods -v=10
+          kubectl cluster-info
 
       # Step 6: Verify nodes in the cluster
       - name: Verify nodes in cluster
