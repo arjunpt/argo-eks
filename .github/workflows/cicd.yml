@@ -311,12 +311,10 @@ jobs:
             chmod +x deploy.sh
             ./deploy.sh
 
-      - name: Kubectl Action
-        uses: tale/kubectl-action@v1
-        with:
-          base64-kube-config: ${{ secrets.KUBE_CONFIG_PROD }}
-      - run: |
-            kubectl get nodes
+      - name: Decode and write kubeconfig
+        run: |
+          echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 --decode > $HOME/.kube/config
+          chmod 600 $HOME/.kube/config
 
       - name: Install Helm
         run: |
