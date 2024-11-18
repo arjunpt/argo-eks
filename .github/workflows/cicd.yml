@@ -360,30 +360,26 @@ jobs:
 
     # Step 2: Decode and write kubeconfig to $HOME/.kube/config
     - name: Write decoded kubeconfig to .kube/config
-      run: echo "${{ secrets.KUBE_CONFIG }}" | base64 --decode > $HOME/.kube/config
+      run: echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 --decode > $HOME/.kube/config
 
     # Step 3: Set the correct file permissions
     - name: Set file permissions for kubeconfig
       run: sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-    # Step 4: Verify the Kubernetes cluster connection
+    # Step 4: Verify Kubernetes connection
     - name: Verify Kubernetes connection
-      run: kubectl cluster-info
+      run: |
+        kubectl cluster-info
+        kubectl get nodes
 
-    # Step 5: Verify nodes in the cluster
-    - name: Verify nodes in cluster
-      run: kubectl get nodes
-
-    # Step 6: Install Helm
+    # Step 5: Install Helm
     - name: Install Helm
       run: |
         curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-    # Step 7: Deploy Helm Chart to EKS
+    # Step 6: Deploy Helm Chart to EKS
     - name: Deploy Helm Chart to EKS
       run: |
         helm upgrade --install testapp ./python-app \
           --namespace default \
           --set image.tag=${{ github.run_id }}
-
-        
