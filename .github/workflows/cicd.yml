@@ -316,6 +316,23 @@ jobs:
           mkdir -p $HOME/.kube  # Create the .kube directory if it doesn't exist
           echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 --decode > $HOME/.kube/config
           chmod 600 $HOME/.kube/config  # Ensure the kubeconfig file has proper permissions
+
+      - name: Verify Kubeconfig content
+        run: |
+          cat $HOME/.kube/config  # Check if kubeconfig is decoded correctly
+
+      - name: Verify AWS credentials
+        run: |
+          aws sts get-caller-identity  # Confirm AWS credentials are valid
+
+      - name: Verify Kubernetes cluster connection
+        run: |
+          kubectl cluster-info  # Check if kubectl can connect to the cluster
+
+      - name: Verify nodes in cluster
+        run: |
+          kubectl get nodes  # Verify access to Kubernetes nodes
+        
           
       - name: Install Helm
         run: |
