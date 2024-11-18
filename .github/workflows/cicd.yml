@@ -313,14 +313,16 @@ jobs:
 
       # Step 4: Configure Kubernetes kubeconfig
       - name: Configure Kubernetes kubeconfig
-        uses: tale/kubectl-action@v1
-        with:
-          base64-kube-config: ${{ secrets.KUBE_CONFIG_PROD }}
+        #uses: tale/kubectl-action@v1
+        run: |
+          aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name testapp
+        # with:
+        #   base64-kube-config: ${{ secrets.KUBE_CONFIG_PROD }}
 
       # Step 5: Verify Kubernetes connection
       - name: Verify Kubernetes cluster connection
         run: |
-          kubectl cluster-info
+          kubectl get pods -v=10
 
       # Step 6: Verify nodes in the cluster
       - name: Verify nodes in cluster
