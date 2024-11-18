@@ -321,7 +321,8 @@ jobs:
         uses: tale/kubectl-action@v1
         with:
           base64-kube-config: ${{ secrets.KUBE_CONFIG_PROD }}
-          kubectl-version: v1.22.0
+      - run: |
+          kubectl get nodes 
           
       - name: Debug Kubeconfig
         run: |
