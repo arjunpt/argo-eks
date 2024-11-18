@@ -313,9 +313,10 @@ jobs:
 
       - name: Decode and write kubeconfig
         run: |
+          mkdir -p $HOME/.kube  # Create the .kube directory if it doesn't exist
           echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 --decode > $HOME/.kube/config
-          chmod 600 $HOME/.kube/config
-
+          chmod 600 $HOME/.kube/config  # Ensure the kubeconfig file has proper permissions
+          
       - name: Install Helm
         run: |
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
