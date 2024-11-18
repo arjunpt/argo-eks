@@ -322,6 +322,12 @@ jobs:
         with:
           base64-kube-config: ${{ secrets.KUBE_CONFIG_PROD }}
           kubectl-version: v1.22.0
+          
+      - name: Debug Kubeconfig
+        run: |
+          echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 --decode > kubeconfig.yaml
+          kubectl cluster-info --kubeconfig=kubeconfig.yaml
+          kubectl get nodes --kubeconfig=kubeconfig.yaml
 
       - name: Verify Kubernetes cluster connection
         run: |
