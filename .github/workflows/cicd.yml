@@ -298,5 +298,22 @@ jobs:
           git commit -m "Update Docker image tag to ${{ github.run_id }} in Helm chart"
           git push
 
+      # Step 4: Install Helm
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+  
+      # Step 5: Deploy updated Helm chart to EKS
+      - name: Deploy Helm Chart to EKS
+        run: |
+          helm upgrade --install testapp ./python-app \
+            --namespace default \
+            --set image.tag=${{ github.run_id }}
+
+
+            
+
+
+
 
         
